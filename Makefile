@@ -16,6 +16,8 @@ DOCKER_DISK=${BUILD_DIR}/docker.img
 DOCKER_SIZE=20G
 TAP_INTF!=./get-tap.sh
 GUEST_NAME=dockerbox-install
+VERSION=0.3.0
+PACKAGE_DIR=dockerbox-img-${VERSION}
 
 
 all: ${DOCKERBOX_ISO} build
@@ -102,12 +104,22 @@ test-run:
 	bhyvectl --destroy --vm=${GUEST_NAME}
 	rm ${BUILD_DIR}/device
 
+pack:
+	mkdir ${PACKAGE_DIR}
+	chown 0:0 ${ROOT_DISK}
+	mv ${ROOT_DISK} ${PACKAGE_DIR}
+	tar czf ${PACKAGE_DIR}.tar.zstd ${PACKAGE_DIR}/disk.img
+	mv ${PACKAGE_DIR}/disk.img ${BUILD_DIR}
+	rmdir ${PACKAGE_DIR}
+
 clean:
 	rm -rf build
 	if [ -e /dev/vmm/${GUEST_NAME} ]; then bhyvectl --destroy --vm=${GUEST_NAME}; fi
+	rm -f dockerbox-img*.tar.zstd
 
 clean-keep-remote-iso:
 	mv ${OFFICIAL_ISO} .
 	rm -rf ${BUILD_DIR}/*
 	mv ${REMOTE_ISO} ${BUILD_DIR}
 	if [ -e /dev/vmm/${GUEST_NAME} ]; then bhyvectl --destroy --vm=${GUEST_NAME}; fi
+	rm -f dockerbox-img*.tar.zstd
