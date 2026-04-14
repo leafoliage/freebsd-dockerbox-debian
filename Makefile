@@ -4,6 +4,7 @@ REMOTE_ISO!=fetch -qo - ${DEBIAN_MIRROR}/ \
 		| head -1
 
 BUILD_DIR=build
+INSTALL_DIR=/usr/local/share/dockerbox
 OFFICIAL_ISO=${BUILD_DIR}/${REMOTE_ISO}
 DOCKERBOX_ISO=${BUILD_DIR}/dockerbox-${REMOTE_ISO}
 ISOFILES=${BUILD_DIR}/isofiles
@@ -17,7 +18,7 @@ TAP_INTF!=./get-tap.sh
 GUEST_NAME=dockerbox-install
 
 
-all: ${DOCKERBOX_ISO} install-root-disk
+all: ${DOCKERBOX_ISO} build
 
 ${OFFICIAL_ISO}:
 	@echo "Fetching latest Debian DVD-1 ISO name..."
@@ -75,7 +76,7 @@ ${DEVICE_MAP}:
 ${ROOT_DISK}:
 	truncate -s ${ROOT_SIZE} ${ROOT_DISK}
 
-install-root-disk: ${DEVICE_MAP} ${DOCKER_DISK} ${ROOT_DISK}
+build: ${DEVICE_MAP} ${DOCKER_DISK} ${ROOT_DISK}
 	grub-bhyve -m ${DEVICE_MAP} -r cd0 -M 1024M ${GUEST_NAME}
 	bhyve -A -H -P -s 0:0,hostbridge -s 1:0,lpc \
 		-s 2:0,virtio-net,${TAP_INTF} \
@@ -85,8 +86,12 @@ install-root-disk: ${DEVICE_MAP} ${DOCKER_DISK} ${ROOT_DISK}
 		-l com1,stdio -c 4 -m 1024M ${GUEST_NAME}
 	bhyvectl --destroy --vm=${GUEST_NAME}
 
+install:
+	install -m 0744 ${ROOT_DISK} ${INSTALL_DIR}
+	install -m 0644 ${DOCKER_DISK} ${INSTALL_DIR}
+
 test-run:
-	echo "(hd0) ${ROOT_DISK}" > ${BUILD_DIR}/device
+	echo "(hd0) ${ROOT_DISK}" > ${BUILD_DIR}/device.test-run
 	grub-bhyve -m ${BUILD_DIR}/device -r hd0,msdos1 -M 1024M ${GUEST_NAME}
 	bhyve -A -H -P -s 0:0,hostbridge -s 1:0,lpc \
 		-s 2:0,virtio-net,${TAP_INTF} \
@@ -99,9 +104,10 @@ test-run:
 
 clean:
 	rm -rf build
+	if [ -e /dev/vmm/${GUEST_NAME} ]; then bhyvectl --destroy --vm=${GUEST_NAME}; fi
 
 clean-keep-remote-iso:
-	rm -rf ${ISOFILES}
-	rm ${BUILD_DIR}/isohdpfx.bin
-	rm ${BUILD_DIR}/dockerbox*.iso
-	rm ${BUILD_DIR}/*.tmp
+	mv ${OFFICIAL_ISO} .
+	rm -rf ${BUILD_DIR}/*
+	mv ${REMOTE_ISO} ${BUILD_DIR}
+	if [ -e /dev/vmm/${GUEST_NAME} ]; then bhyvectl --destroy --vm=${GUEST_NAME}; fi
