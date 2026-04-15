@@ -20,7 +20,7 @@ VERSION=0.3.0
 PACKAGE_DIR=dockerbox-img-${VERSION}
 
 
-all: ${DOCKERBOX_ISO} build
+all: ${DOCKERBOX_ISO} build-disk
 
 ${OFFICIAL_ISO}:
 	@echo "Fetching latest Debian DVD-1 ISO name..."
@@ -78,7 +78,7 @@ ${DEVICE_MAP}:
 ${ROOT_DISK}:
 	truncate -s ${ROOT_SIZE} ${ROOT_DISK}
 
-build: ${DEVICE_MAP} ${DOCKER_DISK} ${ROOT_DISK}
+build-disk: ${DEVICE_MAP} ${DOCKER_DISK} ${ROOT_DISK}
 	grub-bhyve -m ${DEVICE_MAP} -r cd0 -M 1024M ${GUEST_NAME}
 	bhyve -A -H -P -s 0:0,hostbridge -s 1:0,lpc \
 		-s 2:0,virtio-net,${TAP_INTF} \
