@@ -1,2 +1,2 @@
 build/
-dockerbox-img*.tar.zstd
+dockerbox-img-*

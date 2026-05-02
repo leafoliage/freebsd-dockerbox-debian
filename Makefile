@@ -1,3 +1,5 @@
+VERSION=0.3.1
+
 DEBIAN_MIRROR=https://cdimage.debian.org/debian-cd/current/amd64/iso-cd
 REMOTE_ISO!=fetch -qo - ${DEBIAN_MIRROR}/ \
 		| grep -Eom 1 'debian-(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-amd64-netinst\.iso' \
@@ -16,7 +18,6 @@ DOCKER_DISK=${BUILD_DIR}/docker.img
 DOCKER_SIZE=20G
 TAP_INTF!=./get-tap.sh
 GUEST_NAME=dockerbox-install
-VERSION=0.3.0
 PACKAGE_DIR=dockerbox-img-${VERSION}
 
 
