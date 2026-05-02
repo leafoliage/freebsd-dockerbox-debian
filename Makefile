@@ -92,6 +92,9 @@ install:
 	install -m 0744 ${ROOT_DISK} ${INSTALL_DIR}
 	install -m 0644 ${DOCKER_DISK} ${INSTALL_DIR}
 
+install-root-disk:
+	install -m 0744 ${ROOT_DISK} ${INSTALL_DIR}
+
 test-run:
 	echo "(hd0) ${ROOT_DISK}" > ${BUILD_DIR}/device.test-run
 	grub-bhyve -m ${BUILD_DIR}/device -r hd0,msdos1 -M 1024M ${GUEST_NAME}
