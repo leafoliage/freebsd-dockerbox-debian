@@ -30,6 +30,9 @@ Install built image
 
 ```sh
 make install
+
+# Alternatively
+make install-root-disk
 ```
 
 Clean build or clean build while keeping downloaded Debian official ISO.
