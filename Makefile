@@ -1,4 +1,4 @@
-VERSION=0.3.1
+VERSION=0.3.2
 
 DEBIAN_MIRROR=https://cdimage.debian.org/debian-cd/current/amd64/iso-cd
 REMOTE_ISO!=fetch -qo - ${DEBIAN_MIRROR}/ \
@@ -43,6 +43,8 @@ ${ISOFILES}: ${OFFICIAL_ISO}
 	chmod -R +w ${ISOFILES}/install.amd/
 	gunzip ${ISOFILES}/install.amd/initrd.gz
 	echo preseed.cfg | gcpio -H newc -o -A -F ${ISOFILES}/install.amd/initrd
+	echo extend-docker.service | gcpio -H newc -o -A -F ${ISOFILES}/install.amd/initrd
+	echo extend-docker.sh | gcpio -H newc -o -A -F ${ISOFILES}/install.amd/initrd
 	gzip ${ISOFILES}/install.amd/initrd
 	chmod -R -w ${ISOFILES}/install.amd/
 

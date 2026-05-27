@@ -1,0 +1,10 @@
+[Unit]
+Description=Extend docker disk
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/extend-docker.sh
+
+[Install]
+WantedBy=multi-user.target
