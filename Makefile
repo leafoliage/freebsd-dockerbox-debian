@@ -1,4 +1,4 @@
-VERSION=0.3.2
+VERSION=0.4.0
 
 DEBIAN_MIRROR=https://cdimage.debian.org/debian-cd/current/amd64/iso-cd
 REMOTE_ISO!=fetch -qo - ${DEBIAN_MIRROR}/ \
@@ -42,16 +42,17 @@ ${ISOFILES}: ${OFFICIAL_ISO}
 	dd if=${OFFICIAL_ISO} bs=1 count=432 of=build/isohdpfx.bin
 	chmod -R +w ${ISOFILES}/install.amd/
 	gunzip ${ISOFILES}/install.amd/initrd.gz
-	echo preseed.cfg | gcpio -H newc -o -A -F ${ISOFILES}/install.amd/initrd
-	echo extend-docker.service | gcpio -H newc -o -A -F ${ISOFILES}/install.amd/initrd
-	echo extend-docker.sh | gcpio -H newc -o -A -F ${ISOFILES}/install.amd/initrd
 	gzip ${ISOFILES}/install.amd/initrd
 	chmod -R -w ${ISOFILES}/install.amd/
 
 ${DOCKERBOX_ISO}: ${ISOFILES}
-	cp preseed.cfg ${ISOFILES}
+	cp configs/preseed.cfg ${ISOFILES}
+	cp configs/docker.service ${ISOFILES}
+	cp configs/interfaces ${ISOFILES}
+	cp configs/extend-docker.service ${ISOFILES}
+	cp configs/extend-docker.sh ${ISOFILES}
 	chmod +w ${ISOFILES}/boot/grub/grub.cfg
-	cat grub.cfg > ${ISOFILES}/boot/grub/grub.cfg
+	cat configs/grub.cfg > ${ISOFILES}/boot/grub/grub.cfg
 	chmod -w ${ISOFILES}/boot/grub/grub.cfg
 
 	chmod +w ${ISOFILES}/md5sum.txt
@@ -100,7 +101,7 @@ install-root-disk:
 
 test-run:
 	echo "(hd0) ${ROOT_DISK}" > ${BUILD_DIR}/device.test-run
-	grub-bhyve -m ${BUILD_DIR}/device -r hd0,msdos1 -M 1024M ${GUEST_NAME}
+	grub-bhyve -m ${BUILD_DIR}/device.test-run -r hd0,msdos1 -M 1024M ${GUEST_NAME}
 	bhyve -A -H -P -s 0:0,hostbridge -s 1:0,lpc \
 		-s 2:0,virtio-net,${TAP_INTF} \
 		-s 3:0,virtio-blk,./${ROOT_DISK} \
