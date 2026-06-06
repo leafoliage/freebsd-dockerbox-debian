@@ -1,4 +1,4 @@
-VERSION=0.4.0
+VERSION=0.4.1
 
 DEBIAN_MIRROR=https://cdimage.debian.org/debian-cd/current/amd64/iso-cd
 REMOTE_ISO!=fetch -qo - ${DEBIAN_MIRROR}/ \
@@ -51,6 +51,7 @@ ${DOCKERBOX_ISO}: ${ISOFILES}
 	cp configs/interfaces ${ISOFILES}
 	cp configs/extend-docker.service ${ISOFILES}
 	cp configs/extend-docker.sh ${ISOFILES}
+	cp configs/fstab ${ISOFILES}
 	chmod +w ${ISOFILES}/boot/grub/grub.cfg
 	cat configs/grub.cfg > ${ISOFILES}/boot/grub/grub.cfg
 	chmod -w ${ISOFILES}/boot/grub/grub.cfg
