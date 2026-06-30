@@ -1,4 +1,4 @@
-VERSION=0.4.1
+VERSION=0.4.2
 
 DEBIAN_MIRROR=https://cdimage.debian.org/debian-cd/current/amd64/iso-cd
 REMOTE_ISO!=fetch -qo - ${DEBIAN_MIRROR}/ \

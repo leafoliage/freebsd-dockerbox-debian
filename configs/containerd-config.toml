@@ -1,0 +1,2 @@
+disabled_plugins = ["cri"]
+root = "/var/lib/docker/containerd"
