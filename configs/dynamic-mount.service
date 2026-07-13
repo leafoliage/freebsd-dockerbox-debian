@@ -1,0 +1,16 @@
+[Unit]
+Description=Mount shared folder path chosen by host config
+DefaultDependencies=no
+After=usr-local-etc-dockerbox.mount
+Requires=usr-local-etc-dockerbox.mount
+Before=docker.service
+RequiredBy=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/dynamic-mount.sh
+ExecStop=/usr/local/sbin/dynamic-umount.sh
+
+[Install]
+WantedBy=local-fs.target

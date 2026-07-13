@@ -1,2 +1,2 @@
 /dev/vdb1 /var/lib/docker ext4 rw 0 0
-shared_folder /host 9p trans=virtio,version=9p2000.L,cache=mmap,posixacl 0 0
+dockerbox_config /usr/local/etc/dockerbox 9p trans=virtio,version=9p2000.L,cache=mmap,posixacl 0 0
