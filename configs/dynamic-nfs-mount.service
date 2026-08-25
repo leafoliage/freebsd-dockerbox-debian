@@ -1,0 +1,16 @@
+[Unit]
+Description=Mount shared folder path chosen by host config
+Requires=usr-local-etc-dockerbox.mount
+After=usr-local-etc-dockerbox.mount
+Wants=network-online.target
+After=network-online.target
+Before=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/dynamic-nfs-mount.sh
+
+[Install]
+WantedBy=multi-user.target
+RequiredBy=docker.service

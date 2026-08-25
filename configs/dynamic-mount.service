@@ -10,7 +10,6 @@ RequiredBy=docker.service
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/usr/local/sbin/dynamic-mount.sh
-ExecStop=/usr/local/sbin/dynamic-umount.sh
 
 [Install]
 WantedBy=local-fs.target
