@@ -1,4 +1,4 @@
-VERSION=0.4.4
+VERSION=0.4.5
 
 DEBIAN_MIRROR=https://cdimage.debian.org/debian-cd/current/amd64/iso-cd
 REMOTE_ISO!=fetch -qo - ${DEBIAN_MIRROR}/ \
@@ -16,6 +16,8 @@ ROOT_DISK=${BUILD_DIR}/disk.img
 ROOT_SIZE=3G
 DOCKER_DISK=${BUILD_DIR}/docker.img
 DOCKER_SIZE=20G
+SHARED_FOLDER=/dockerbox
+CONF_DIR=/usr/local/etc/dockerbox
 TAP_INTF!=./get-tap.sh
 GUEST_NAME=dockerbox-install
 PACKAGE_DIR=dockerbox-img-${VERSION}
@@ -102,7 +104,8 @@ test-run:
 		-s 2:0,virtio-net,${TAP_INTF} \
 		-s 3:0,virtio-blk,./${ROOT_DISK} \
 		-s 4:0,virtio-blk,./${DOCKER_DISK} \
-		-s 5:0,ahci-cd,./${DOCKERBOX_ISO} \
+		-s 5:0,virtio-9p,shared_folder=${SHARED_FOLDER} \
+		-s 6:0,virtio-9p,dockerbox_config=${CONF_DIR} \
 		-l com1,stdio -c 4 -m 1024M ${GUEST_NAME}
 	bhyvectl --destroy --vm=${GUEST_NAME}
 	rm ${BUILD_DIR}/device

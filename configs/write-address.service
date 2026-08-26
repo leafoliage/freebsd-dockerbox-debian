@@ -1,0 +1,19 @@
+[Unit]
+Description=Write dockerbox address into /etc/network/interfaces
+DefaultDependencies=no
+Requires=usr-local-etc-dockerbox.mount
+After=usr-local-etc-dockerbox.mount
+Wants=network-pre.target
+Before=network-pre.target
+Before=networking.service
+Conflicts=shutdown.target
+Before=shutdown.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/write-address.sh
+
+[Install]
+WantedBy=sysinit.target
+RequiredBy=networking.service
